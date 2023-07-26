@@ -31,12 +31,17 @@
 <div class="container-fluid">
   <div class="row">
 	<div class="col-sm-12 text-center">
-		<h2>This is a random Message</h2>
+		<!--<h2>This is a random Message</h2> -->
 			<div class="col-sm-4 text-center"></div>
 			<div class="col-sm-4 text-center">
 				<div class="thumbnail">
 					<img src="{{url_for('static', filename='{}'.format(dog_image))}}" class="embed-responsive-item" alt="Doggo image" width="100%">
-					<caption><b>{{ random_phrase }}</b></caption>
+					<caption>
+						<b>Name:</b> {{ doggo_name }} <br>
+						<b>Breed:</b> {{ doggo_breed }}<br>
+						<b>Fact:</b> {{ doggo_fact }}
+					
+					</caption>
 				</div>
 			</div>
 			<div class="col-sm-4 text-center"></div> 
