@@ -3,16 +3,13 @@ from random import randint
 
 app = Flask(__name__)
 
-incomes = [
-    { 'description': 'salary', 'amount': 5000 }
-]
-
-phrases = ["Yo", "Welcome", "This is a website","I am a cat", "I am a greek god",
-           "You can not stop the spongebob", "Anchovies Mr. Squidward... Anchovies"]
-
-
 doggos = [{"img":"doggo1.png","name":"Billy","breed":"Golden Retriever","fact":"Billy likes to sit on the grass and take in the sun with a smile!"},
-          {"img":"doggo2.png","name":"Ollie (@goodboyollie)","breed":"Chocolate Labrador","fact":"Ollie is a famous doggo with 6.7 Million TikTok followers!"}]
+          {"img":"doggo2.png","name":"Ollie (@good.boy.ollie)","breed":"Labrador","fact":"Ollie is a famous doggo with 6.7 Million TikTok followers!"},
+          {"img":"doggo3.png","name":"Tato (@good.boy.tato)","breed":"Labrador","fact":"Tato is the brother of famous doggo @good.boy.ollie and also qualified for the 2024!"},
+          {"img":"doggo4.png","name":"Barkley","breed":"Shiba Inu","fact":"Barkley loves to travel around the US with his owners!"},
+          {"img":"doggo5.png","name":"Hector (@hectorthechocolabo)","breed":"Labrador","fact":"Hector is a famous instagram doggo with 132K followers!"},
+          {"img":"doggo6.png","name":"Yogi","breed":"Labrador","fact":"Yogi, also known as baby Yogi, is the brother of famous instagram doggo @hectorthechocolabo."},
+          {"img":"doggo7.png","name":"Dex","breed":"Rotweiler","fact":"Dex is a goofy doggo who loves nothing more than chasing a frisbee!"}]
 
 
 @app.route('/')
@@ -25,8 +22,12 @@ def landing_page():
                                        doggo_breed = doggos[dog_number]["breed"],
                                        doggo_fact = doggos[dog_number]["fact"])
 
+
 @app.route('/doggos')
 def get_doggos():
+    """
+    This function will return all the dogs in the list.
+    """
     return jsonify(doggos)
                    
 
@@ -52,7 +53,7 @@ def get_doggo_breed(doggo_breed):
 
     Parameters
     --------------------
-    int : doggo_breed
+    str : doggo_breed
         This is the breed of the dog to be returned.
     """
     dogs = []
@@ -60,8 +61,7 @@ def get_doggo_breed(doggo_breed):
         if dog["breed"] == doggo_breed:
             dogs.append(dog)
     return jsonify(dogs)
-    #return "<b>Error! This ID does not correlate to a valid doggo!</b>"
-    #return jsonify(doggos[doggo_id])
+
 
 """
 @app.route('/incomes', methods=['POST'])
