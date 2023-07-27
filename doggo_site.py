@@ -9,12 +9,12 @@ doggos = [{"img":"doggo1.png","name":"Billy","breed":"Golden Retriever","fact":"
           {"img":"doggo4.png","name":"Barkley","breed":"Shiba Inu","fact":"Barkley loves to travel around the US with his owners!"},
           {"img":"doggo5.png","name":"Hector (@hectorthechocolabo)","breed":"Labrador","fact":"Hector is a famous instagram doggo with 132K followers!"},
           {"img":"doggo6.png","name":"Yogi","breed":"Labrador","fact":"Yogi, also known as baby Yogi, is the brother of famous instagram doggo @hectorthechocolabo."},
-          {"img":"doggo7.png","name":"Dex","breed":"Rotweiler","fact":"Dex is a goofy doggo who loves nothing more than chasing a frisbee!"}]
+          {"img":"doggo7.png","name":"Dex","breed":"Rotweiler","fact":"Dex is a goofy doggo who loves nothing more than chasing a frisbee!"},
+          {"img":"doggo8.png","name":"Tucker Budzyn (@TuckerBudzyn)","breed":"Golden Retriever","fact":"Tucker is the worlds most famous pet with a following of 10.4 million on TikTok. Tucker also has a staggering net worth of $2 million!"}]
 
 
 @app.route('/')
 def landing_page():
-    #phrase = phrases[randint(0,len(phrases)-1)]
     dog_number = randint(0,len(doggos)-1)
     print(dog_number)
     return render_template("index.html",doggo_name = doggos[dog_number]["name"],
@@ -42,7 +42,7 @@ def get_doggo(doggo_id):
         This is the ID for the dog.
     """
     if doggo_id > len(doggos) or doggo_id < 0:
-        return "<b>Error! This ID does not correlate to a valid doggo!</b>"
+        return render_template("error.html"), 404
     return jsonify(doggos[doggo_id])
 
 
@@ -62,6 +62,11 @@ def get_doggo_breed(doggo_breed):
             dogs.append(dog)
     return jsonify(dogs)
 
+
+@app.errorhandler(404)
+def page_not_found(e):
+    # note that we set the 404 status explicitly
+    return render_template('error.html'), 404
 
 """
 @app.route('/incomes', methods=['POST'])
