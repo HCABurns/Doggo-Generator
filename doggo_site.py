@@ -5,6 +5,7 @@ from pymongo.server_api import ServerApi
 from PIL import Image
 from bson import Binary
 import io
+import base64
 
 app = Flask(__name__)
 
@@ -43,17 +44,19 @@ def landing_page():
     dog_number = randint(0,len(doggos)-1)
     print(dog_number)
 
-    im = Image.open(f"./static/{doggos[dog_number]['img']}")
-    image_bytes = io.BytesIO()
-    im.save(image_bytes, format='JPEG')
-        
-    #client.dogs.dog.insert_one({"img":image_bytes.getvalue(),"name":"Billy","breed":"Golden Retriever","fact":"Billy likes to sit on the grass and take in the sun with a smile!"})
 
-    #for x in client.dogs.dog.find():
-        #print(x["img"])
+    with open(f"static/{doggos[dog_number]['img']}", "rb") as imageFile:
+        b64 = base64.b64encode(imageFile.read())
+    #im.save(image_bytes, format='JPEG')
+        
+    #client.dogs.dog.insert_one({"img":b64,"name":"Billy","breed":"Golden Retriever","fact":"Billy likes to sit on the grass and take in the sun with a smile!"})
+
+    for x in client.dogs.dog.find():
+        image64 = x["img"]
+        print(image64)
     
     return render_template("index.html",doggo_name = doggos[dog_number]["name"],
-                                       dog_image = doggos[dog_number]["img"],
+                                       dog_image = b64.decode(),
                                        doggo_breed = doggos[dog_number]["breed"],
                                        doggo_fact = doggos[dog_number]["fact"])
 

@@ -24,7 +24,7 @@
 <!-- This creates a horizontal line for looks -->
 <div class="hr-lines">
   <div class="hr-line"></div>
-  <div class="hr-lines-img"><img src="../static/icon.png" width="10%" ></div>
+  <div class="hr-lines-img"><img src="../static/icon.png" width="10%"></div>
   <div class="hr-line"></div>
 </div>
 
@@ -35,7 +35,7 @@
 			<div class="col-sm-4 text-center"></div>
 			<div class="col-sm-4 text-center">
 				<div class="thumbnail">
-					<img src="{{url_for('static', filename='{}'.format(dog_image))}}" class="embed-responsive-item" alt="Doggo image" width="100%">
+					<img src="data:image/png;base64,{{dog_image}}" class="embed-responsive-item" alt="Doggo image" width="100%" />
 					<caption>
 						<b>Name:</b> {{ doggo_name }} <br>
 						<b>Breed:</b> {{ doggo_breed }}<br>
