@@ -2,9 +2,9 @@ from flask import Flask, jsonify, request, render_template
 from random import randint
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
-from PIL import Image
-from bson import Binary
-import io
+#from PIL import Image
+#from bson import Binary
+#import io
 import base64
 
 app = Flask(__name__)
@@ -28,7 +28,7 @@ db = client.dogs
 mc=db.dog
 """
 
-
+"""
 doggos = [{"img":"doggo1.png","name":"Billy","breed":"Golden Retriever","fact":"Billy likes to sit on the grass and take in the sun with a smile!"},
           {"img":"doggo2.png","name":"Ollie (@good.boy.ollie)","breed":"Labrador","fact":"Ollie is a famous doggo with 6.7 Million TikTok followers!"},
           {"img":"doggo3.png","name":"Tato (@good.boy.tato)","breed":"Labrador","fact":"Tato is the brother of famous doggo @good.boy.ollie and also qualified for the 2024!"},
@@ -37,7 +37,7 @@ doggos = [{"img":"doggo1.png","name":"Billy","breed":"Golden Retriever","fact":"
           {"img":"doggo6.png","name":"Yogi","breed":"Labrador","fact":"Yogi, also known as baby Yogi, is the brother of famous instagram doggo @hectorthechocolabo."},
           {"img":"doggo7.png","name":"Dex","breed":"Rotweiler","fact":"Dex is a goofy doggo who loves nothing more than chasing a frisbee!"},
           {"img":"doggo8.png","name":"Tucker Budzyn (@TuckerBudzyn)","breed":"Golden Retriever","fact":"Tucker is the worlds most famous pet with a following of 10.4 million on TikTok. Tucker also has a staggering net worth of $2 million!"}]
-
+"""
 
 @app.route('/')
 def landing_page():
@@ -80,7 +80,16 @@ def get_doggos():
     """
     This function will return all the dogs in the list.
     """
-    return jsonify(doggos)
+
+    out = []
+    for x in client.dogs.dog.find():
+        x.pop("_id")
+        tmp = x["img"]
+        x.pop("img")
+        x["img"] = tmp.decode()#.replace("'", '"')
+        print(x)
+        out.append(x)
+    return jsonify(out)#jsonify(x)
                    
 
 @app.route('/doggo/<int:doggo_id>', methods = ['GET'])
