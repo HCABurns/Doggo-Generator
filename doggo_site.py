@@ -75,21 +75,19 @@ def landing_page():
                                         doggo_fact = dog_Fact)
 
 
-@app.route('/doggos')
+@app.route('/doggos', methods = ['GET'])
 def get_doggos():
     """
     This function will return all the dogs in the list.
     """
-
     out = []
     for x in client.dogs.dog.find():
         x.pop("_id")
         tmp = x["img"]
         x.pop("img")
         x["img"] = tmp.decode()#.replace("'", '"')
-        print(x)
         out.append(x)
-    return jsonify(out)#jsonify(x)
+    return jsonify(out)
                    
 
 @app.route('/doggo/<int:doggo_id>', methods = ['GET'])
