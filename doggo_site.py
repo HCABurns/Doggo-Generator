@@ -122,10 +122,10 @@ def get_doggo_breed(doggo_breed):
     return jsonify(dogs)
 
 
-@app.errorhandler(404)
+@app.errorhandler(500)
 def page_not_found(e):
-    # note that we set the 404 status explicitly
-    return render_template('error.html'), 404
+    # note that we set the 500 status explicitly
+    return render_template('server_error.html'), 500
 
 """
 @app.route('/incomes', methods=['POST'])
