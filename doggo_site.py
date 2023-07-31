@@ -2,13 +2,9 @@ from flask import Flask, jsonify, request, render_template
 from random import randint
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
-#from PIL import Image
-#from bson import Binary
-#import io
 import base64
 
 app = Flask(__name__)
-
 
 uri = "mongodb+srv://admin:lE8686QBDMQFtM5S@dog-generator.g9bskdd.mongodb.net/?retryWrites=true&w=majority"
 # Create a new client and connect to the server
@@ -20,24 +16,6 @@ try:
 except Exception as e:
     print(e)
 
-"""
-#client = MongoClient('mongodb://localhost:27017/', username='admin', password='j5P1wwZLIICqy4J0')
-client = MongoClient('mongodb://127.0.0.1:27017/')
-db = client.dogs
-# Access collection of the database
-mc=db.dog
-"""
-
-"""
-doggos = [{"img":"doggo1.png","name":"Billy","breed":"Golden Retriever","fact":"Billy likes to sit on the grass and take in the sun with a smile!"},
-          {"img":"doggo2.png","name":"Ollie (@good.boy.ollie)","breed":"Labrador","fact":"Ollie is a famous doggo with 6.7 Million TikTok followers!"},
-          {"img":"doggo3.png","name":"Tato (@good.boy.tato)","breed":"Labrador","fact":"Tato is the brother of famous doggo @good.boy.ollie and also qualified for the 2024!"},
-          {"img":"doggo4.png","name":"Barkley","breed":"Shiba Inu","fact":"Barkley loves to travel around the US with his owners!"},
-          {"img":"doggo5.png","name":"Hector (@hectorthechocolabo)","breed":"Labrador","fact":"Hector is a famous instagram doggo with 132K followers!"},
-          {"img":"doggo6.png","name":"Yogi","breed":"Labrador","fact":"Yogi, also known as baby Yogi, is the brother of famous instagram doggo @hectorthechocolabo."},
-          {"img":"doggo7.png","name":"Dex","breed":"Rotweiler","fact":"Dex is a goofy doggo who loves nothing more than chasing a frisbee!"},
-          {"img":"doggo8.png","name":"Tucker Budzyn (@TuckerBudzyn)","breed":"Golden Retriever","fact":"Tucker is the worlds most famous pet with a following of 10.4 million on TikTok. Tucker also has a staggering net worth of $2 million!"}]
-"""
 
 @app.route('/')
 def landing_page():
@@ -58,8 +36,7 @@ def landing_page():
         #print(image64)
     """
     
-    
-    #Get random record??????
+    #Get random record
     pipeline = [{'$sample': {'size': 1}}]
     
     #db.dogs.dog.aggregate([{ $sample: { size: 1 } }])
@@ -81,12 +58,9 @@ def get_doggos():
     This function will return all the dogs in the list.
     """
     out = []
-    for x in client.dogs.dog.find():
-        x.pop("_id")
-        tmp = x["img"]
-        x.pop("img")
-        x["img"] = tmp.decode()#.replace("'", '"')
-        out.append(x)
+    for dog in client.dogs.dog.find():
+        dog = convert_data(dog)
+        out.append(dog)
     return jsonify(out)
                    
 
@@ -100,9 +74,10 @@ def get_doggo(doggo_id):
     int : doggo_id
         This is the ID for the dog.
     """
-    if doggo_id > len(doggos) or doggo_id < 0:
-        return render_template("error.html"), 404
-    return jsonify(doggos[doggo_id])
+    for i,dog in enumerate(client.dogs.dog.find()):
+        if i == doggo_id:
+            return jsonify(convert_data(dog)) 
+    return render_template("error.html"), 404
 
 
 @app.route('/breed/<string:doggo_breed>', methods = ['GET'])
@@ -116,10 +91,17 @@ def get_doggo_breed(doggo_breed):
         This is the breed of the dog to be returned.
     """
     dogs = []
-    for dog in doggos:
-        if dog["breed"] == doggo_breed:
+    for dog in client.dogs.dog.find():
+        dog = convert_data(dog)
+        if dog["breed"].lower() == doggo_breed.lower():
             dogs.append(dog)
     return jsonify(dogs)
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    # note that we set the 500 status explicitly
+    return render_template('error.html'), 404
 
 
 @app.errorhandler(500)
@@ -127,6 +109,25 @@ def page_not_found(e):
     # note that we set the 500 status explicitly
     return render_template('server_error.html'), 500
 
+
+def convert_data(record):
+    """
+    This will convert a record from the database to a useable state.
+
+    Parameters
+    -------------------
+    record : Dict
+        This is a dictionary of a document retrieved from the MongoDB database.
+
+    Return
+    -------------------
+    dict : A dictionary without the id and the image is decoded from base64. 
+    """
+    record.pop("_id")
+    tmp = record["img"]
+    record["img"] = tmp.decode()
+    return record
+    
 """
 @app.route('/incomes', methods=['POST'])
 def add_income():
