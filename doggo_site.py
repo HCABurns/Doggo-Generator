@@ -98,6 +98,14 @@ def get_doggo_breed(doggo_breed):
     return jsonify(dogs)
 
 
+@app.route('/add', methods = ['GET'])
+def add_doggo():
+    """
+    This function will return all the dogs in the list.
+    """
+    return render_template("add.html")
+
+
 @app.errorhandler(404)
 def page_not_found(e):
     # note that we set the 500 status explicitly
