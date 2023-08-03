@@ -108,10 +108,12 @@ def add_doggo():
     if request.method == 'POST':
         name = request.form.get("name")
         fact = request.form.get("fact")
+        breed =request.form.get("breed")
         image = request.files['file']
-        image_string = base64.b64encode(image.read())
-        print(name , fact)
-        print(image_string)
+        b64 = base64.b64encode(image.read())
+
+        client.dogs.dog.insert_one({"img":b64,"name":name,"breed":breed,"fact":fact})
+
         
         #print(base64.b64encode(file))
         return render_template("add.html") , 201
