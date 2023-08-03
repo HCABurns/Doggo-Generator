@@ -98,12 +98,23 @@ def get_doggo_breed(doggo_breed):
     return jsonify(dogs)
 
 
-@app.route('/add', methods = ['GET'])
+@app.route('/add', methods = ['GET','POST'])
 def add_doggo():
     """
     This function will return all the dogs in the list.
     """
-    return render_template("add.html")
+    if request.method == 'GET':
+        return render_template("add.html")
+    if request.method == 'POST':
+        name = request.form.get("name")
+        fact = request.form.get("fact")
+        image = request.files['file']
+        image_string = base64.b64encode(image.read())
+        print(name , fact)
+        print(image_string)
+        
+        #print(base64.b64encode(file))
+        return render_template("add.html") , 201
 
 
 @app.errorhandler(404)
