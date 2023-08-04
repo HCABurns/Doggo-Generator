@@ -1,10 +1,12 @@
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, flash
 from random import randint
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 import base64
 
 app = Flask(__name__)
+app.config['MAX_CONTENT_PATH'] = 16 * 1000000 #16MB limit (For MongoDB)
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 uri = "mongodb+srv://admin:lE8686QBDMQFtM5S@dog-generator.g9bskdd.mongodb.net/?retryWrites=true&w=majority"
 # Create a new client and connect to the server
@@ -112,8 +114,13 @@ def add_doggo():
         image = request.files['file']
         b64 = base64.b64encode(image.read())
 
-        client.dogs.dog.insert_one({"img":b64,"name":name,"breed":breed,"fact":fact})
+        if not name or not fact or not breed or not image:
+            return render_template("add.html", doggo_name = name,
+                                               doggo_fact = fact,
+                                               doggo_breed = breed,
+                                               doggo_image = image)
 
+        client.dogs.dog.insert_one({"img":b64,"name":name,"breed":breed,"fact":fact})
         
         #print(base64.b64encode(file))
         return render_template("add.html") , 201
