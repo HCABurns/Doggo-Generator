@@ -52,10 +52,12 @@
 		  
 		  
 		  <label for="img" class="form-label">Dog Image</label>
-		  <input class="input_file" type="file" name="file" name="file" id="img" value={{doggo_img}}>
-		  
+		  <input class="input_file" type="file" name="file" name="file" id="img" accept="image/x-png" value={{doggo_img}}>
 		  <button type="submit" class="btn btn-primary">Submit</button>
 		</form>
+		
+		<label id="img">{{message}}</label>
+		
 	</div>
   </div>
  </div>
