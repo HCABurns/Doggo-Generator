@@ -114,11 +114,22 @@ def add_doggo():
         image = request.files['file']
         b64 = base64.b64encode(image.read())
 
-        if not name or not fact or not breed or not image:
+        if not name or not fact or not breed or not image or ".png" not in image.filename:
+
+            if not name:
+                message = "Missing Data: Name is empty!"
+            elif not breed:
+                message = "Missing Data: Breed is empty!"
+            elif not fact:
+                message = "Missing Data: Fact is empty!"
+            else:
+                message = "Error: Empty or incorrect file type. Only PNG accepted!"
+            
             return render_template("add.html", doggo_name = name,
                                                doggo_fact = fact,
                                                doggo_breed = breed,
-                                               doggo_image = image)
+                                               doggo_image = image,
+                                               message = message)
 
         client.dogs.dog.insert_one({"img":b64,"name":name,"breed":breed,"fact":fact})
         
