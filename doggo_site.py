@@ -2,13 +2,15 @@ from flask import Flask, jsonify, request, render_template, flash
 from random import randint
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
+import dbInfo 
 import base64
 
+print(dbInfo.get_secret_key())
 app = Flask(__name__)
 app.config['MAX_CONTENT_PATH'] = 16 * 1000000 #16MB limit (For MongoDB)
-app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+app.secret_key = dbInfo.get_secret_key()
 
-uri = "mongodb+srv://admin:lE8686QBDMQFtM5S@dog-generator.g9bskdd.mongodb.net/?retryWrites=true&w=majority"
+uri = "mongodb+srv://{}:{}@dog-generator.g9bskdd.mongodb.net/?retryWrites=true&w=majority".format(dbInfo.get_username(),dbInfo.get_password())
 # Create a new client and connect to the server
 client = MongoClient(uri, server_api=ServerApi('1'))
 # Send a ping to confirm a successful connection
