@@ -1,22 +1,24 @@
 from flask import Flask, jsonify, request, render_template, flash
 from random import randint
-from pymongo import MongoClient
+from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
+from bson.objectid import ObjectId
+from bson.errors import InvalidId
 import dbInfo 
 import base64
 
-print(dbInfo.get_secret_key())
 app = Flask(__name__)
 app.config['MAX_CONTENT_PATH'] = 16 * 1000000 #16MB limit (For MongoDB)
 app.secret_key = dbInfo.get_secret_key()
 
-uri = "mongodb+srv://{}:{}@dog-generator.g9bskdd.mongodb.net/?retryWrites=true&w=majority".format(dbInfo.get_username(),dbInfo.get_password())
+uri = "mongodb+srv://{}:{}@dog-generator.g9bskdd.mongodb.net/?retryWrites=true&w=majority&appName=dog-generator".format(dbInfo.get_username(),dbInfo.get_password())
 # Create a new client and connect to the server
 client = MongoClient(uri, server_api=ServerApi('1'))
 # Send a ping to confirm a successful connection
 try:
+    print("Attempting Ping...")
     client.admin.command('ping')
-    print("Pinged your deployment. You successfully connected to MongoDB!")
+    print("Pinged deployment. Successfully connected to MongoDB!")
 except Exception as e:
     print(e)
 
@@ -58,31 +60,44 @@ def landing_page():
 
 @app.route('/doggos', methods = ['GET'])
 def get_doggos():
-    """
-    This function will return all the dogs in the list.
-    """
     out = []
     for dog in client.dogs.dog.find():
         dog = convert_data(dog)
         out.append(dog)
-    return jsonify(out)
+    return jsonify({
+        "doggos": out,
+        "count": len(out)
+    })
                    
-
+"""
 @app.route('/doggo/<int:doggo_id>', methods = ['GET'])
 def get_doggo(doggo_id):
-    """
+"""
+"""
     This function will return a single JSON Object correlating to a single dog.
 
     Parameters
     --------------------
     int : doggo_id
         This is the ID for the dog.
-    """
+"""
+"""
     for i,dog in enumerate(client.dogs.dog.find()):
         if i == doggo_id:
             return jsonify(convert_data(dog)) 
     return render_template("error.html"), 404
-
+"""
+    
+@app.route('/doggo/<string:doggo_id>', methods=['GET'])
+def get_doggo(doggo_id):
+    try:
+        dog = client.dogs.dog.find_one({'_id': ObjectId(doggo_id)})
+        if dog:
+            return jsonify(convert_data(dog))
+        else:
+            return jsonify({'error': 'Dog not found'}), 404
+    except:
+        return jsonify({'error': 'Invalid ID'}), 400
 
 @app.route('/breed/<string:doggo_breed>', methods = ['GET'])
 def get_doggo_breed(doggo_breed):
@@ -141,13 +156,13 @@ def add_doggo():
 
 @app.errorhandler(404)
 def page_not_found(e):
-    # note that we set the 500 status explicitly
+    if request.path.startswith('/doggo') or request.path.startswith('/doggos'):
+        return jsonify({'error': 'Not found'}), 404
     return render_template('error.html'), 404
 
 
 @app.errorhandler(500)
 def page_not_found(e):
-    # note that we set the 500 status explicitly
     return render_template('server_error.html'), 500
 
 
@@ -164,14 +179,11 @@ def convert_data(record):
     -------------------
     dict : A dictionary without the id and the image is decoded from base64. 
     """
-    record.pop("_id")
+    record["_id"] = str(record["_id"])
     tmp = record["img"]
     record["img"] = tmp.decode()
     return record
     
-"""
-@app.route('/incomes', methods=['POST'])
-def add_income():
-    incomes.append(request.get_json())
-    return '', 204
-"""
+#if __name__ == "__main__":
+#    app.run()    
+
